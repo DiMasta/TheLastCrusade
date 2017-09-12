@@ -207,6 +207,7 @@ public:
 	void init(int height, int width);
 	void setRoomType(Coords coords, RoomType roomType);
 	RoomType getRoomType(Coords coords) const;
+	bool validCoords(Coords coords) const;
 
 	void debug() const;
 private:
@@ -266,6 +267,15 @@ void Dungeon::setRoomType(Coords coords, RoomType roomType) {
 
 RoomType Dungeon::getRoomType(Coords coords) const {
 	return map[coords.getYCoord()][coords.getXCoord()].getType();
+}
+
+//*************************************************************************************************************
+//*************************************************************************************************************
+
+bool Dungeon::validCoords(Coords coords) const {
+	int x = coords.getXCoord();
+	int y = coords.getYCoord();
+	return x >= 0 && x < width && y >= 0 && y < height;
 }
 
 //*************************************************************************************************************
@@ -338,7 +348,7 @@ public:
 
 	void debug() const;
 
-	bool indyCanMovefromTo(Coords from, Coords to, Direction movingDir) const;
+	bool indyCanMovefromTo(Coords to, Direction movingDir) const;
 
 private:
 	int turnsCount;
@@ -440,6 +450,14 @@ void Game::turnBegin() {
 //*************************************************************************************************************
 
 void Game::makeTurn() {
+	for (int dirIdx = 0; dirIdx < DIRECTION_COUNT; ++dirIdx) {
+		Coords nextRoomToCheck = indy->getPosition() + DIRECTIONS[dirIdx];
+
+		if (dungeon->validCoords(nextRoomToCheck) && indyCanMovefromTo(nextRoomToCheck, (Direction)dirIdx)) {
+			cout << nextRoomToCheck.getXCoord() << " " << nextRoomToCheck.getYCoord() << endl;
+			break;
+		}
+	}
 }
 
 //*************************************************************************************************************
@@ -465,10 +483,10 @@ void Game::debug() const {
 	dungeon->debug();
 }
 
-bool Game::indyCanMovefromTo(Coords from, Coords to, Direction movingDir) const {
+bool Game::indyCanMovefromTo(Coords to, Direction movingDir) const {
 	bool canMove = false;
 
-	RoomType fromType = dungeon->getRoomType(from);
+	RoomType fromType = dungeon->getRoomType(indy->getPosition());
 	RoomType toType = dungeon->getRoomType(to);
 
 	return canMove;
