@@ -17,6 +17,10 @@ const int ZERO_CHAR = '0';
 const int INVALID_COORD = -1;
 const int DIRECTION_COUNT = 4;
 
+const string LEFT = "LEFT";
+const string TOP = "TOP";
+const string RIGHT = "RIGHT";
+
 enum RoomType {
 	RT_INVALID = -1,
 	RT_0 = 0,
@@ -168,13 +172,15 @@ Coords DIRECTIONS[DIRECTION_COUNT] = {
 class Room {
 public:
 	Room();
-	~Room();
+	virtual ~Room();
 
 	RoomType getType() const {
 		return type;
 	}
 
 	void setType(RoomType type) { this->type = type; }
+
+	virtual Direction getExitDirection(string entry) const = 0;
 
 private:
 	RoomType type;
@@ -194,6 +200,252 @@ Room::~Room() {
 
 }
 
+//*************************************************************************************************************
+//*************************************************************************************************************
+
+class Type0 : public Room {
+public:
+	Type0() {}
+	~Type0() {}
+
+	Direction getExitDirection(string entry) const {
+		return DIR_INVALID;
+	}
+
+private:
+};
+
+//*************************************************************************************************************
+//*************************************************************************************************************
+
+class Type1 : public Room {
+public:
+	Type1() {}
+	~Type1() {}
+
+	Direction getExitDirection(string entry) const {
+		return DIR_S;
+	}
+
+private:
+};
+
+//*************************************************************************************************************
+//*************************************************************************************************************
+
+class Type2 : public Room {
+public:
+	Type2() {}
+	~Type2() {}
+
+	Direction getExitDirection(string entry) const {
+		Direction dir = DIR_INVALID;
+
+		if (LEFT == entry) {
+			dir = DIR_E;
+		}
+		else if (RIGHT == entry) {
+			dir = DIR_W;
+		}
+
+		return dir;
+	}
+
+private:
+};
+
+//*************************************************************************************************************
+//*************************************************************************************************************
+
+class Type3 : public Room {
+public:
+	Type3() {}
+	~Type3() {}
+
+	Direction getExitDirection(string entry) const {
+		return DIR_S;
+	}
+
+private:
+};
+
+//*************************************************************************************************************
+//*************************************************************************************************************
+
+class Type4 : public Room {
+public:
+	Type4() {}
+	~Type4() {}
+
+	Direction getExitDirection(string entry) const {
+		Direction dir = DIR_INVALID;
+
+		if (TOP == entry) {
+			dir = DIR_W;
+		}
+		else if (RIGHT == entry) {
+			dir = DIR_S;
+		}
+
+		return dir;
+	}
+
+private:
+};
+
+//*************************************************************************************************************
+//*************************************************************************************************************
+
+class Type5 : public Room {
+public:
+	Type5() {}
+	~Type5() {}
+
+	Direction getExitDirection(string entry) const {
+		Direction dir = DIR_INVALID;
+
+		if (TOP == entry) {
+			dir = DIR_E;
+		}
+		else if (LEFT == entry) {
+			dir = DIR_S;
+		}
+
+		return dir;
+	}
+
+private:
+};
+
+//*************************************************************************************************************
+//*************************************************************************************************************
+
+class Type6 : public Room {
+public:
+	Type6() {}
+	~Type6() {}
+
+	Direction getExitDirection(string entry) const {
+		Direction dir = DIR_INVALID;
+
+		if (LEFT == entry) {
+			dir = DIR_E;
+		}
+		else if (RIGHT == entry) {
+			dir = DIR_W;
+		}
+
+		return dir;
+	}
+
+private:
+};
+
+//*************************************************************************************************************
+//*************************************************************************************************************
+
+class Type7 : public Room {
+public:
+	Type7() {}
+	~Type7() {}
+
+	Direction getExitDirection(string entry) const {
+		return DIR_S;
+	}
+
+private:
+};
+
+//*************************************************************************************************************
+//*************************************************************************************************************
+
+class Type8 : public Room {
+public:
+	Type8() {}
+	~Type8() {}
+
+	Direction getExitDirection(string entry) const {
+		return DIR_S;
+	}
+
+private:
+};
+
+//*************************************************************************************************************
+//*************************************************************************************************************
+
+class Type9 : public Room {
+public:
+	Type9() {}
+	~Type9() {}
+
+	Direction getExitDirection(string entry) const {
+		return DIR_S;
+	}
+
+private:
+};
+
+//*************************************************************************************************************
+//*************************************************************************************************************
+
+class Type10 : public Room {
+public:
+	Type10() {}
+	~Type10() {}
+
+	Direction getExitDirection(string entry) const {
+		return DIR_W;
+	}
+
+private:
+};
+
+//*************************************************************************************************************
+//*************************************************************************************************************
+
+class Type11 : public Room {
+public:
+	Type11() {}
+	~Type11() {}
+
+	Direction getExitDirection(string entry) const {
+		return DIR_E;
+	}
+
+private:
+};
+
+//*************************************************************************************************************
+//*************************************************************************************************************
+
+class Type12 : public Room {
+public:
+	Type12() {}
+	~Type12() {}
+
+	Direction getExitDirection(string entry) const {
+		return DIR_S;
+	}
+
+private:
+};
+
+//*************************************************************************************************************
+//*************************************************************************************************************
+
+class Type13 : public Room {
+public:
+	Type13() {}
+	~Type13() {}
+
+	Direction getExitDirection(string entry) const {
+		return DIR_S;
+	}
+
+private:
+};
+
 //-------------------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------------------
@@ -206,7 +458,7 @@ public:
 
 	void init(int height, int width);
 	void setRoomType(Coords coords, RoomType roomType);
-	RoomType getRoomType(Coords coords) const;
+	Room* getRoom(Coords coords) const;
 	bool validCoords(Coords coords) const;
 
 	void debug() const;
@@ -214,7 +466,7 @@ private:
 	int width;
 	int height;
 
-	Room** map;
+	Room*** map;
 };
 
 //*************************************************************************************************************
@@ -231,6 +483,13 @@ Dungeon::~Dungeon() {
 	if (map) {
 		for (int rowIdx = 0; rowIdx < height; ++rowIdx) {
 			if (map[rowIdx]) {
+				for (int colIdx = 0; colIdx < width; ++colIdx) {
+					if (map[rowIdx][colIdx]) {
+						delete map[rowIdx][colIdx];
+						map[rowIdx][colIdx] = NULL;
+					}
+				}
+
 				delete[] map[rowIdx];
 				map[rowIdx] = NULL;
 			}
@@ -248,10 +507,10 @@ void Dungeon::init(int height, int width) {
 	this->height = height;
 	this->width = width;
 
-	map = new Room*[height];
+	map = new Room**[height];
 
 	for (int rowIdx = 0; rowIdx < height; ++rowIdx) {
-		map[rowIdx] = new Room[width];
+		map[rowIdx] = new Room*[width];
 	}
 }
 
@@ -259,14 +518,14 @@ void Dungeon::init(int height, int width) {
 //*************************************************************************************************************
 
 void Dungeon::setRoomType(Coords coords, RoomType roomType) {
-	map[coords.getYCoord()][coords.getXCoord()].setType(roomType);
+	map[coords.getYCoord()][coords.getXCoord()]->setType(roomType);
 }
 
 //*************************************************************************************************************
 //*************************************************************************************************************
 
-RoomType Dungeon::getRoomType(Coords coords) const {
-	return map[coords.getYCoord()][coords.getXCoord()].getType();
+Room* Dungeon::getRoom(Coords coords) const {
+	return map[coords.getYCoord()][coords.getXCoord()];
 }
 
 //*************************************************************************************************************
@@ -284,7 +543,7 @@ bool Dungeon::validCoords(Coords coords) const {
 void Dungeon::debug() const {
 	for (int rowIdx = 0; rowIdx < height; ++rowIdx) {
 		for (int colIdx = 0; colIdx < width; ++colIdx) {
-			cerr << map[rowIdx][colIdx].getType();
+			cerr << map[rowIdx][colIdx]->getType();
 		}
 
 		cerr << endl;
@@ -305,10 +564,16 @@ public:
 		return position;
 	}
 
+	string getEntry() const {
+		return entry;
+	}
+
 	void setPosition(Coords coords) { this->position = position; }
+	void setEntry(string entry) { this->entry = entry; }
 
 private:
 	Coords position;
+	string entry;
 };
 
 //*************************************************************************************************************
@@ -348,7 +613,7 @@ public:
 
 	void debug() const;
 
-	bool indyCanMovefromTo(Coords to, Direction movingDir) const;
+	Direction nextRoomDirection() const;
 
 private:
 	int turnsCount;
@@ -414,11 +679,32 @@ void Game::getGameInput() {
 
 	for (int rowIdx = 0; rowIdx < H; ++rowIdx) {
 		for (int colIdx = 0; colIdx < W; ++colIdx) {
-			int roomTypeInt;
-			cin >> roomTypeInt;
+			char roomTypeChar;
+			cin >> roomTypeChar;
+			int roomTypeInt = roomTypeChar - ZERO_CHAR;
 
-			RoomType roomType = (RoomType)roomTypeInt;
-			dungeon->setRoomType(Coords(colIdx, rowIdx), roomType);
+			Coords coords(colIdx, rowIdx);
+			Room* room = dungeon->getRoom(coords);
+
+			switch (roomTypeInt) {
+				case RT_0: { room = new Type0(); break; }
+				case RT_1: { room = new Type1(); break; }
+				case RT_2: { room = new Type2(); break; }
+				case RT_3: { room = new Type3(); break; }
+				case RT_4: { room = new Type4(); break; }
+				case RT_5: { room = new Type5(); break; }
+				case RT_6: { room = new Type6(); break; }
+				case RT_7: { room = new Type7(); break; }
+				case RT_8: { room = new Type8(); break; }
+				case RT_9: { room = new Type9(); break; }
+				case RT_10: { room = new Type10(); break; }
+				case RT_11: { room = new Type11(); break; }
+				case RT_12: { room = new Type12(); break; }
+				case RT_13: { room = new Type13(); break; }
+				default: { break; }
+			}
+
+			room->setType((RoomType)roomTypeInt);
 		}
 
 		cin.ignore();
@@ -438,6 +724,7 @@ void Game::getTurnInput() {
 	cin >> XI >> YI >> POS; cin.ignore();
 
 	indy->setPosition(Coords(XI, YI));
+	indy->setEntry(POS);
 }
 
 //*************************************************************************************************************
@@ -450,14 +737,11 @@ void Game::turnBegin() {
 //*************************************************************************************************************
 
 void Game::makeTurn() {
-	for (int dirIdx = 0; dirIdx < DIRECTION_COUNT; ++dirIdx) {
-		Coords nextRoomToCheck = indy->getPosition() + DIRECTIONS[dirIdx];
+	Direction dir = nextRoomDirection();
+	Coords indyPositon = indy->getPosition();
+	Coords res = indyPositon + DIRECTIONS[dir];
 
-		if (dungeon->validCoords(nextRoomToCheck) && indyCanMovefromTo(nextRoomToCheck, (Direction)dirIdx)) {
-			cout << nextRoomToCheck.getXCoord() << " " << nextRoomToCheck.getYCoord() << endl;
-			break;
-		}
-	}
+	cout << res.getXCoord() << " " << res.getYCoord() << endl;
 }
 
 //*************************************************************************************************************
@@ -483,13 +767,13 @@ void Game::debug() const {
 	dungeon->debug();
 }
 
-bool Game::indyCanMovefromTo(Coords to, Direction movingDir) const {
-	bool canMove = false;
+//*************************************************************************************************************
+//*************************************************************************************************************
 
-	RoomType fromType = dungeon->getRoomType(indy->getPosition());
-	RoomType toType = dungeon->getRoomType(to);
-
-	return canMove;
+Direction Game::nextRoomDirection() const {
+	Coords indyPosition = indy->getPosition();
+	string indyEntry = indy->getEntry();
+	return dungeon->getRoom(indyPosition)->getExitDirection(indyEntry);
 }
 
 //-------------------------------------------------------------------------------------------------------------
