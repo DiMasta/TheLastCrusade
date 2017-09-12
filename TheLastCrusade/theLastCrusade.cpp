@@ -15,7 +15,7 @@ const int INVALID_NODE_DEPTH = -1;
 const int TREE_ROOT_NODE_DEPTH = 1;
 const int ZERO_CHAR = '0';
 const int INVALID_COORD = -1;
-const int DIRECTION_COUNT = 8;
+const int DIRECTION_COUNT = 4;
 
 enum RoomType {
 	RT_INVALID = -1,
@@ -145,13 +145,9 @@ void Coords::debug() const {
 enum Direction {
 	DIR_INVALID = -1,
 	DIR_N = 0,
-	DIR_NE,
 	DIR_E,
-	DIR_SE,
 	DIR_S,
-	DIR_SW,
 	DIR_W,
-	DIR_NW,
 };
 
 //*************************************************************************************************************
@@ -159,13 +155,9 @@ enum Direction {
 
 Coords DIRECTIONS[DIRECTION_COUNT] = {
 	Coords(0, -1), // N
-	Coords(1, -1), // NE
 	Coords(1,  0), // E
-	Coords(1,  1), // SE
 	Coords(0,  1), // S
-	Coords(-1,  1), // SW
 	Coords(-1,  0), // W
-	Coords(-1, -1)  // NW
 };
 
 //-------------------------------------------------------------------------------------------------------------
@@ -213,7 +205,8 @@ public:
 	~Dungeon();
 
 	void init(int height, int width);
-	void setRoomType(int rowIdx, int colIdx, RoomType roomType);
+	void setRoomType(Coords coords, RoomType roomType);
+	RoomType getRoomType(Coords coords) const;
 
 	void debug() const;
 private:
@@ -264,8 +257,15 @@ void Dungeon::init(int height, int width) {
 //*************************************************************************************************************
 //*************************************************************************************************************
 
-void Dungeon::setRoomType(int rowIdx, int colIdx, RoomType roomType) {
-	map[rowIdx][colIdx].setType(roomType);
+void Dungeon::setRoomType(Coords coords, RoomType roomType) {
+	map[coords.getYCoord()][coords.getXCoord()].setType(roomType);
+}
+
+//*************************************************************************************************************
+//*************************************************************************************************************
+
+RoomType Dungeon::getRoomType(Coords coords) const {
+	return map[coords.getYCoord()][coords.getXCoord()].getType();
 }
 
 //*************************************************************************************************************
@@ -279,6 +279,42 @@ void Dungeon::debug() const {
 
 		cerr << endl;
 	}
+}
+
+//-------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------------
+
+class Indy {
+public:
+	Indy();
+	~Indy();
+
+	Coords getPosition() const {
+		return position;
+	}
+
+	void setPosition(Coords coords) { this->position = position; }
+
+private:
+	Coords position;
+};
+
+//*************************************************************************************************************
+//*************************************************************************************************************
+
+Indy::Indy() :
+	position()
+{
+
+}
+
+//*************************************************************************************************************
+//*************************************************************************************************************
+
+Indy::~Indy() {
+
 }
 
 //-------------------------------------------------------------------------------------------------------------
@@ -302,10 +338,13 @@ public:
 
 	void debug() const;
 
+	bool indyCanMovefromTo(Coords from, Coords to, Direction movingDir) const;
+
 private:
 	int turnsCount;
 
 	Dungeon* dungeon;
+	Indy* indy;
 };
 
 //*************************************************************************************************************
@@ -313,7 +352,8 @@ private:
 
 Game::Game() :
 	turnsCount(0),
-	dungeon(NULL)
+	dungeon(NULL),
+	indy(NULL)
 {
 }
 
@@ -325,13 +365,18 @@ Game::~Game() {
 		delete dungeon;
 		dungeon = NULL;
 	}
+
+	if (indy) {
+		delete indy;
+		indy = NULL;
+	}
 }
 
 //*************************************************************************************************************
 //*************************************************************************************************************
 
 void Game::initGame() {
-
+	indy = new Indy();
 }
 
 //*************************************************************************************************************
@@ -363,7 +408,7 @@ void Game::getGameInput() {
 			cin >> roomTypeInt;
 
 			RoomType roomType = (RoomType)roomTypeInt;
-			dungeon->setRoomType(rowIdx, colIdx, roomType);
+			dungeon->setRoomType(Coords(colIdx, rowIdx), roomType);
 		}
 
 		cin.ignore();
@@ -381,6 +426,8 @@ void Game::getTurnInput() {
 	int YI;
 	string POS;
 	cin >> XI >> YI >> POS; cin.ignore();
+
+	indy->setPosition(Coords(XI, YI));
 }
 
 //*************************************************************************************************************
@@ -416,6 +463,15 @@ void Game::play() {
 
 void Game::debug() const {
 	dungeon->debug();
+}
+
+bool Game::indyCanMovefromTo(Coords from, Coords to, Direction movingDir) const {
+	bool canMove = false;
+
+	RoomType fromType = dungeon->getRoomType(from);
+	RoomType toType = dungeon->getRoomType(to);
+
+	return canMove;
 }
 
 //-------------------------------------------------------------------------------------------------------------
