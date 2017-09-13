@@ -10,6 +10,7 @@
 
 using namespace std;
 
+const bool USE_HARDCODED_INPUT = 0;
 const bool OUTPUT_GAME_DATA = 1;
 
 const int INVALID_ID = -1;
@@ -183,8 +184,8 @@ public:
 	void setType(RoomType type) { this->type = type; }
 
 	void addOpennedExit(Direction dir);
+	Direction getExitDirection(Direction entry) const;
 
-	virtual Direction getExitDirection(string entry) const = 0;
 	virtual bool hasExitInDirection(Direction exitDir) const = 0;
 
 private:
@@ -218,13 +219,56 @@ void Room::addOpennedExit(Direction dir) {
 //*************************************************************************************************************
 //*************************************************************************************************************
 
+// TODO: make this function pure virtual
+Direction Room::getExitDirection(Direction entry) const {
+	Direction res = DIR_INVALID;
+
+	bool canGoDown = find(opennedExits.begin(), opennedExits.end(), DIR_S) != opennedExits.end();
+	bool roomsWithSouthExit = RT_1 == type;
+
+	if (canGoDown && roomsWithSouthExit) {
+		res = DIR_S;
+	}
+	else if (RT_4 == type) {
+		if (DIR_N == entry) {
+			res = DIR_W;
+		}
+		else if (DIR_E == entry) {
+			res = DIR_S;
+		}
+	}
+	else if (RT_5 == type) {
+		if (DIR_N == entry) {
+			res = DIR_E;
+		}
+		else if (DIR_W == entry) {
+			res = DIR_S;
+		}
+	}
+	else {
+		for (int dirIdx = 0; dirIdx < opennedExits.size(); ++dirIdx) {
+			Direction dir = opennedExits[dirIdx];
+
+			if (dir != entry) {
+				res = dir;
+				break;
+			}
+		}
+	}
+
+	return res;
+}
+
+//*************************************************************************************************************
+//*************************************************************************************************************
+
 class Type0 : public Room {
 public:
 	Type0() {}
 	~Type0() {}
 
-	Direction getExitDirection(string entry) const {
-		return DIR_INVALID;
+	bool hasExitInDirection(Direction exitDir) const {
+		return false;
 	}
 
 private:
@@ -238,8 +282,8 @@ public:
 	Type1() {}
 	~Type1() {}
 
-	Direction getExitDirection(string entry) const {
-		return DIR_S;
+	bool hasExitInDirection(Direction exitDir) const {
+		return DIR_S == exitDir || DIR_E == exitDir || DIR_W == exitDir;
 	}
 
 private:
@@ -253,17 +297,8 @@ public:
 	Type2() {}
 	~Type2() {}
 
-	Direction getExitDirection(string entry) const {
-		Direction dir = DIR_INVALID;
-
-		if (LEFT == entry) {
-			dir = DIR_E;
-		}
-		else if (RIGHT == entry) {
-			dir = DIR_W;
-		}
-
-		return dir;
+	bool hasExitInDirection(Direction exitDir) const {
+		return DIR_E == exitDir || DIR_W == exitDir;
 	}
 
 private:
@@ -277,8 +312,8 @@ public:
 	Type3() {}
 	~Type3() {}
 
-	Direction getExitDirection(string entry) const {
-		return DIR_S;
+	bool hasExitInDirection(Direction exitDir) const {
+		return DIR_S == exitDir;
 	}
 
 private:
@@ -292,17 +327,8 @@ public:
 	Type4() {}
 	~Type4() {}
 
-	Direction getExitDirection(string entry) const {
-		Direction dir = DIR_INVALID;
-
-		if (TOP == entry) {
-			dir = DIR_W;
-		}
-		else if (RIGHT == entry) {
-			dir = DIR_S;
-		}
-
-		return dir;
+	bool hasExitInDirection(Direction exitDir) const {
+		return DIR_S == exitDir || DIR_W == exitDir;
 	}
 
 private:
@@ -316,17 +342,8 @@ public:
 	Type5() {}
 	~Type5() {}
 
-	Direction getExitDirection(string entry) const {
-		Direction dir = DIR_INVALID;
-
-		if (TOP == entry) {
-			dir = DIR_E;
-		}
-		else if (LEFT == entry) {
-			dir = DIR_S;
-		}
-
-		return dir;
+	bool hasExitInDirection(Direction exitDir) const {
+		return DIR_S == exitDir || DIR_E == exitDir;
 	}
 
 private:
@@ -340,17 +357,8 @@ public:
 	Type6() {}
 	~Type6() {}
 
-	Direction getExitDirection(string entry) const {
-		Direction dir = DIR_INVALID;
-
-		if (LEFT == entry) {
-			dir = DIR_E;
-		}
-		else if (RIGHT == entry) {
-			dir = DIR_W;
-		}
-
-		return dir;
+	bool hasExitInDirection(Direction exitDir) const {
+		return DIR_E == exitDir || DIR_W == exitDir;
 	}
 
 private:
@@ -364,8 +372,8 @@ public:
 	Type7() {}
 	~Type7() {}
 
-	Direction getExitDirection(string entry) const {
-		return DIR_S;
+	bool hasExitInDirection(Direction exitDir) const {
+		return DIR_S == exitDir || DIR_E == exitDir;
 	}
 
 private:
@@ -379,8 +387,8 @@ public:
 	Type8() {}
 	~Type8() {}
 
-	Direction getExitDirection(string entry) const {
-		return DIR_S;
+	bool hasExitInDirection(Direction exitDir) const {
+		return DIR_S == exitDir || DIR_E == exitDir || DIR_W == exitDir;
 	}
 
 private:
@@ -394,8 +402,8 @@ public:
 	Type9() {}
 	~Type9() {}
 
-	Direction getExitDirection(string entry) const {
-		return DIR_S;
+	bool hasExitInDirection(Direction exitDir) const {
+		return DIR_S == exitDir || DIR_W == exitDir;
 	}
 
 private:
@@ -409,8 +417,8 @@ public:
 	Type10() {}
 	~Type10() {}
 
-	Direction getExitDirection(string entry) const {
-		return DIR_W;
+	bool hasExitInDirection(Direction exitDir) const {
+		return DIR_W == exitDir;
 	}
 
 private:
@@ -424,8 +432,8 @@ public:
 	Type11() {}
 	~Type11() {}
 
-	Direction getExitDirection(string entry) const {
-		return DIR_E;
+	bool hasExitInDirection(Direction exitDir) const {
+		return DIR_E == exitDir;
 	}
 
 private:
@@ -439,8 +447,8 @@ public:
 	Type12() {}
 	~Type12() {}
 
-	Direction getExitDirection(string entry) const {
-		return DIR_S;
+	bool hasExitInDirection(Direction exitDir) const {
+		return DIR_S == exitDir;
 	}
 
 private:
@@ -454,8 +462,8 @@ public:
 	Type13() {}
 	~Type13() {}
 
-	Direction getExitDirection(string entry) const {
-		return DIR_S;
+	bool hasExitInDirection(Direction exitDir) const {
+		return DIR_S == exitDir;
 	}
 
 private:
@@ -479,7 +487,7 @@ public:
 	bool validCoords(Coords coords) const;
 	void createRoom(Coords coords, RoomType roomType);
 	void fillOpennedExits();
-	bool checkIfExitIsOpenned(Direction exitDirection, RoomType roomType, RoomType neighType) const;
+	bool checkIfExitIsOpenned(Direction exitDirection, Room* room, RoomType neighType) const;
 
 	void debug() const;
 private:
@@ -594,6 +602,10 @@ void Dungeon::fillOpennedExits() {
 		for (int colIdx = 0; colIdx < width; ++colIdx) {
 			Room* room = map[rowIdx][colIdx];
 
+			if (RT_0 == room->getType()) {
+				continue;
+			}
+
 			Coords roomCoords(colIdx, rowIdx);
 			// Start from 1, because Nort cannot be an exit
 			for (int dirIdx = 1; dirIdx < DIRECTIONS_COUNT; ++dirIdx) {
@@ -603,7 +615,7 @@ void Dungeon::fillOpennedExits() {
 					Direction exitDir = (Direction)dirIdx;
 					RoomType neighType = getRoom(neighCoords)->getType();
 
-					bool opennedExit = checkIfExitIsOpenned(exitDir, room->getType(), neighType);
+					bool opennedExit = checkIfExitIsOpenned(exitDir, room, neighType);
 
 					if (opennedExit) {
 						room->addOpennedExit(exitDir);
@@ -630,12 +642,12 @@ void Dungeon::debug() const {
 //*************************************************************************************************************
 //*************************************************************************************************************
 
-bool Dungeon::checkIfExitIsOpenned(Direction exitDirection, RoomType roomType, RoomType neighType) const {
+bool Dungeon::checkIfExitIsOpenned(Direction exitDirection, Room* room, RoomType neighType) const {
 	bool exitOpenned = false;
 
-	bool hasSouthExit = roomType;
-	bool hasEastExit;
-	bool hasWestExit;
+	bool hasSouthExit = room->hasExitInDirection(DIR_S);
+	bool hasEastExit = room->hasExitInDirection(DIR_E);
+	bool hasWestExit = room->hasExitInDirection(DIR_W);
 
 	if (hasSouthExit && DIR_S == exitDirection) {
 		exitOpenned =
@@ -686,16 +698,16 @@ public:
 		return position;
 	}
 
-	string getEntry() const {
+	Direction getEntry() const {
 		return entry;
 	}
 
 	void setPosition(Coords coords) { this->position = coords; }
-	void setEntry(string entry) { this->entry = entry; }
+	void setEntry(Direction entry) { this->entry = entry; }
 
 private:
 	Coords position;
-	string entry;
+	Direction entry;
 };
 
 //*************************************************************************************************************
@@ -737,6 +749,7 @@ public:
 	void debug() const;
 
 	Direction nextRoomDirection() const;
+	Direction parseStringDir(string strDir) const;
 
 private:
 	int turnsCount;
@@ -812,16 +825,14 @@ void Game::getGameInput() {
 
 	for (int rowIdx = 0; rowIdx < H; ++rowIdx) {
 		for (int colIdx = 0; colIdx < W; ++colIdx) {
-			char roomTypeChar;
-			cin >> roomTypeChar;
+			int roomType;
+			cin >> roomType;
 			if (OUTPUT_GAME_DATA) {
-				cerr << roomTypeChar;
+				cerr << roomType << " ";
 			}
 
-			int roomTypeInt = roomTypeChar - ZERO_CHAR;
-
 			Coords coords(colIdx, rowIdx);
-			dungeon->createRoom(coords, (RoomType)roomTypeInt);
+			dungeon->createRoom(coords, (RoomType)roomType);
 		}
 
 		cin.ignore();
@@ -844,13 +855,47 @@ void Game::getTurnInput() {
 	int XI;
 	int YI;
 	string POS;
-	cin >> XI >> YI >> POS; cin.ignore();
+
+	if (USE_HARDCODED_INPUT) {
+		if (0 == turnsCount) {
+			XI = 1; YI = 0; POS = TOP;
+		}
+		if (1 == turnsCount) {
+			XI = 1; YI = 1; POS = TOP;
+		}
+		if (2 == turnsCount) {
+			XI = 2; YI = 1; POS = LEFT;
+		}
+		if (3 == turnsCount) {
+			XI = 3; YI = 1; POS = LEFT;
+		}
+		if (4 == turnsCount) {
+			XI = 4; YI = 1; POS = LEFT;
+		}
+		if (5 == turnsCount) {
+			XI = 5; YI = 1; POS = LEFT;
+		}
+		if (6 == turnsCount) {
+			XI = 6; YI = 1; POS = LEFT;
+		}
+		if (7 == turnsCount) {
+			XI = 7; YI = 1; POS = LEFT;
+		}
+		if (8 == turnsCount) {
+			XI = 7; YI = 2; POS = TOP;
+		}
+	}
+	else {
+		cin >> XI >> YI >> POS; cin.ignore();
+	}
+
 	if (OUTPUT_GAME_DATA) {
-		//cerr << XI << " " << YI << " " << POS << endl;
+		cerr << XI << " " << YI << " " << POS << endl;
 	}
 
 	indy->setPosition(Coords(XI, YI));
-	indy->setEntry(POS);
+	Direction dir = parseStringDir(POS);
+	indy->setEntry(dir);
 }
 
 //*************************************************************************************************************
@@ -868,6 +913,46 @@ void Game::makeTurn() {
 	Coords res = indyPositon + DIRECTIONS[dir];
 
 	cout << res.getXCoord() << " " << res.getYCoord() << endl;
+
+	//if (0 == turnsCount) {
+	//	cout << "1 1" << endl;
+	//}
+	//if (1 == turnsCount) {
+	//	cout << "2 1" << endl;
+	//}
+	//if (2 == turnsCount) {
+	//	cout << "3 1" << endl;
+	//}
+	//if (3 == turnsCount) {
+	//	cout << "4 1" << endl;
+	//}
+	//if (4 == turnsCount) {
+	//	cout << "5 1" << endl;
+	//}
+	//if (5 == turnsCount) {
+	//	cout << "6 1" << endl;
+	//}
+	//if (6 == turnsCount) {
+	//	cout << "6 2" << endl;
+	//}
+	//if (7 == turnsCount) {
+	//	cout << "6 3" << endl;
+	//}
+	//if (8 == turnsCount) {
+	//	cout << "5 3" << endl;
+	//}
+	//if (9 == turnsCount) {
+	//	cout << "4 3" << endl;
+	//}
+	//if (10 == turnsCount) {
+	//	cout << "3 3" << endl;
+	//}
+	//if (11 == turnsCount) {
+	//	cout << "2 3" << endl;
+	//}
+	//if (12 == turnsCount) {
+	//	cout << "1 3" << endl;
+	//}
 }
 
 //*************************************************************************************************************
@@ -899,8 +984,29 @@ void Game::debug() const {
 
 Direction Game::nextRoomDirection() const {
 	Coords indyPosition = indy->getPosition();
-	string indyEntry = indy->getEntry();
+	Direction indyEntry = indy->getEntry();
 	return dungeon->getRoom(indyPosition)->getExitDirection(indyEntry);
+}
+
+//*************************************************************************************************************
+//*************************************************************************************************************
+
+Direction Game::parseStringDir(string strDir) const {
+	Direction dir = DIR_INVALID;
+
+	if (TOP == strDir) {
+		dir = DIR_N;
+	}
+
+	if (LEFT == strDir) {
+		dir = DIR_W;
+	}
+
+	if (RIGHT == strDir) {
+		dir = DIR_E;
+	}
+
+	return dir;
 }
 
 //-------------------------------------------------------------------------------------------------------------
