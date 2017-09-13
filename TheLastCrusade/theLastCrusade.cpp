@@ -185,7 +185,7 @@ public:
 	void addOpennedExit(Direction dir);
 
 	virtual Direction getExitDirection(string entry) const = 0;
-	virtual bool fillOpennedExit(Direction exitDirection, RoomType neighType) = 0;
+	virtual bool hasExitInDirection(Direction exitDir) const = 0;
 
 private:
 	RoomType type;
@@ -227,10 +227,6 @@ public:
 		return DIR_INVALID;
 	}
 
-	bool fillOpennedExit(Direction exitDirection, RoomType neighType) {
-		return false;
-	}
-
 private:
 };
 
@@ -244,39 +240,6 @@ public:
 
 	Direction getExitDirection(string entry) const {
 		return DIR_S;
-	}
-
-	bool fillOpennedExit(Direction exitDirection, RoomType neighType) {
-		bool exitOpenned = false;
-
-		if (DIR_S == exitDirection) {
-			exitOpenned = checkIfExitIsOpenned(exitDirection, neighType);
-
-		}
-
-		if (DIR_E == direction) {
-			exitOpenned =
-				RT_1 == neighType ||
-				RT_2 == neighType ||
-				RT_5 == neighType ||
-				RT_6 == neighType ||
-				RT_8 == neighType ||
-				RT_9 == neighType ||
-				RT_13 == neighType;
-		}
-
-		if (DIR_W == direction) {
-			exitOpenned =
-				RT_1 == neighType ||
-				RT_2 == neighType ||
-				RT_4 == neighType ||
-				RT_6 == neighType ||
-				RT_7 == neighType ||
-				RT_8 == neighType ||
-				RT_12 == neighType;
-		}
-
-		return exitOpenned;
 	}
 
 private:
@@ -303,33 +266,6 @@ public:
 		return dir;
 	}
 
-	bool checkForOpennedExit(Direction direction, RoomType neighType) {
-		bool exitOpenned = false;
-
-		if (DIR_E == direction) {
-			exitOpenned =
-				RT_1 == neighType ||
-				RT_2 == neighType ||
-				RT_5 == neighType ||
-				RT_6 == neighType ||
-				RT_8 == neighType ||
-				RT_9 == neighType ||
-				RT_13 == neighType;
-		}
-		else if (DIR_W == direction) {
-			exitOpenned =
-				RT_1 == neighType ||
-				RT_2 == neighType ||
-				RT_4 == neighType ||
-				RT_6 == neighType ||
-				RT_7 == neighType ||
-				RT_8 == neighType ||
-				RT_12 == neighType;
-		}
-
-		return exitOpenned;
-	}
-
 private:
 };
 
@@ -343,24 +279,6 @@ public:
 
 	Direction getExitDirection(string entry) const {
 		return DIR_S;
-	}
-
-	bool checkForOpennedExit(Direction direction, RoomType neighType) {
-		bool exitOpenned = false;
-
-		if (DIR_S == direction) {
-			exitOpenned =
-				RT_1 == neighType ||
-				RT_3 == neighType ||
-				RT_4 == neighType ||
-				RT_5 == neighType ||
-				RT_7 == neighType ||
-				RT_9 == neighType ||
-				RT_10 == neighType ||
-				RT_11 == neighType;
-		}
-
-		return exitOpenned;
 	}
 
 private:
@@ -387,34 +305,6 @@ public:
 		return dir;
 	}
 
-	bool checkForOpennedExit(Direction direction, RoomType neighType) {
-		bool exitOpenned = false;
-
-		if (DIR_W == direction) {
-			exitOpenned =
-				RT_1 == neighType ||
-				RT_2 == neighType ||
-				RT_4 == neighType ||
-				RT_6 == neighType ||
-				RT_7 == neighType ||
-				RT_8 == neighType ||
-				RT_12 == neighType;
-		}
-		else if (DIR_S == direction) {
-			exitOpenned =
-				RT_1 == neighType ||
-				RT_3 == neighType ||
-				RT_4 == neighType ||
-				RT_5 == neighType ||
-				RT_7 == neighType ||
-				RT_9 == neighType ||
-				RT_10 == neighType ||
-				RT_11 == neighType;
-		}
-
-		return exitOpenned;
-	}
-
 private:
 };
 
@@ -437,23 +327,6 @@ public:
 		}
 
 		return dir;
-	}
-
-	bool checkForOpennedExit(Direction direction, RoomType neighType) {
-		bool exitOpenned = false;
-
-		if (DIR_E == direction) {
-			exitOpenned =
-				RT_1 == neighType ||
-				RT_2 == neighType ||
-				RT_5 == neighType ||
-				RT_6 == neighType ||
-				RT_8 == neighType ||
-				RT_9 == neighType ||
-				RT_13 == neighType;
-		}
-
-		return exitOpenned;
 	}
 
 private:
@@ -480,14 +353,6 @@ public:
 		return dir;
 	}
 
-	bool checkForOpennedExit(Direction direction, RoomType neighType) {
-		bool exitOpenned = false;
-
-
-
-		return exitOpenned;
-	}
-
 private:
 };
 
@@ -501,14 +366,6 @@ public:
 
 	Direction getExitDirection(string entry) const {
 		return DIR_S;
-	}
-
-	bool checkForOpennedExit(Direction direction, RoomType neighType) {
-		bool exitOpenned = false;
-
-
-
-		return exitOpenned;
 	}
 
 private:
@@ -526,14 +383,6 @@ public:
 		return DIR_S;
 	}
 
-	bool checkForOpennedExit(Direction direction, RoomType neighType) {
-		bool exitOpenned = false;
-
-
-
-		return exitOpenned;
-	}
-
 private:
 };
 
@@ -547,14 +396,6 @@ public:
 
 	Direction getExitDirection(string entry) const {
 		return DIR_S;
-	}
-
-	bool checkForOpennedExit(Direction direction, RoomType neighType) {
-		bool exitOpenned = false;
-
-
-
-		return exitOpenned;
 	}
 
 private:
@@ -572,14 +413,6 @@ public:
 		return DIR_W;
 	}
 
-	bool checkForOpennedExit(Direction direction, RoomType neighType) {
-		bool exitOpenned = false;
-
-
-
-		return exitOpenned;
-	}
-
 private:
 };
 
@@ -593,14 +426,6 @@ public:
 
 	Direction getExitDirection(string entry) const {
 		return DIR_E;
-	}
-
-	bool checkForOpennedExit(Direction direction, RoomType neighType) {
-		bool exitOpenned = false;
-
-
-
-		return exitOpenned;
 	}
 
 private:
@@ -618,14 +443,6 @@ public:
 		return DIR_S;
 	}
 
-	bool checkForOpennedExit(Direction direction, RoomType neighType) {
-		bool exitOpenned = false;
-
-
-
-		return exitOpenned;
-	}
-
 private:
 };
 
@@ -639,14 +456,6 @@ public:
 
 	Direction getExitDirection(string entry) const {
 		return DIR_S;
-	}
-
-	bool checkForOpennedExit(Direction direction, RoomType neighType) {
-		bool exitOpenned = false;
-
-
-
-		return exitOpenned;
 	}
 
 private:
